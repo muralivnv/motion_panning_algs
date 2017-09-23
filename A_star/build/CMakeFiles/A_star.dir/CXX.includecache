@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/A_star/AStarGrid.h
+Node.h
+../include/A_star/Node.h
+iostream
+-
+vector
+-
+
+../include/A_star/Node.h
+
+/home/vnv/motion_planning/A_star/src/A_star/AStarGrid.cpp
+A_star/AStarGrid.h
+-
+

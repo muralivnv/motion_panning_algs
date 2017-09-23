@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../bin/A_star/libA_star.a  CMakeFiles/A_star.dir/src/A_star/AStarGrid.cpp.o
+/usr/bin/ranlib ../bin/A_star/libA_star.a

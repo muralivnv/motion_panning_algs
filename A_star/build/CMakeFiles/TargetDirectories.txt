@@ -1,0 +1,5 @@
+/home/vnv/motion_planning/A_star/build/CMakeFiles/edit_cache.dir
+/home/vnv/motion_planning/A_star/build/CMakeFiles/A_star.dir
+/home/vnv/motion_planning/A_star/build/CMakeFiles/main.dir
+/home/vnv/motion_planning/A_star/build/CMakeFiles/sfml_test.dir
+/home/vnv/motion_planning/A_star/build/CMakeFiles/rebuild_cache.dir

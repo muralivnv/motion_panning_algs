@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/sfml_test.dir/src/sfml_test.cpp.o  -o ../bin/A_star/sfml_test -rdynamic -lsfml-graphics -lsfml-window -lsfml-system 

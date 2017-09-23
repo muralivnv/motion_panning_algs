@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/vnv/motion_planning/A_star/src/sfml_test.cpp
+SFML/Graphics.hpp
+-
+iostream
+-
+vector
+-
+

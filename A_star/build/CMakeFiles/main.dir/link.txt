@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/main.dir/src/main.cpp.o  -o ../bin/A_star/main -rdynamic ../bin/A_star/libA_star.a -lsfml-graphics -lsfml-window -lsfml-system 

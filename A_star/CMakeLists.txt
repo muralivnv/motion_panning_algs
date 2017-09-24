@@ -10,7 +10,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 # add compiler options, flags ..
-add_compile_options(-std=c++14)
+add_compile_options(-std=c++14 -g)
 
 include_directories(${CMAKE_SOURCE_DIR}/include
                     /usr/include)

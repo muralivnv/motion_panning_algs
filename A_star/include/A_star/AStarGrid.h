@@ -4,16 +4,18 @@
 #include "Node.h"
 #include <iostream>
 #include <vector>
+#include <SFML/Graphics.hpp>
+#include <sstream>
 
 
 class AStarGrid{
     int grid_size_X_ = 0, grid_size_Y_ = 0;
-    int node_radius_ = 0;
+    double node_radius_ = 0.0;
     
     std::vector<std::vector<Node> > grid_;
 
     public:
-        AStarGrid(int gridX, int gridY, int radius) 
+        AStarGrid(int gridX, int gridY, double radius) 
                     :   grid_size_X_(gridX), grid_size_Y_(gridY),
                         node_radius_(radius){
               
@@ -26,6 +28,7 @@ class AStarGrid{
         void create_grid();
         void start(int,int);
         void goal(int,int);
+        void draw_grid();
         void print();
 };
 

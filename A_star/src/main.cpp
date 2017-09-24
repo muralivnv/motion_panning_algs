@@ -4,9 +4,10 @@
 int main(int argc, char** argv)
 {
 
-    AStarGrid path_grid(15,15,1);
+    AStarGrid path_grid(30,30,0.5);
     path_grid.create_grid();
-    path_grid.print();
+
+    path_grid.draw_grid();
 
     return EXIT_SUCCESS;
 }

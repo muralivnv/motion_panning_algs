@@ -13,6 +13,10 @@ iostream
 -
 vector
 -
+SFML/Graphics.hpp
+-
+sstream
+-
 
 ../include/A_star/Node.h
 

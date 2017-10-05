@@ -17,6 +17,14 @@ SFML/Graphics.hpp
 -
 sstream
 -
+list
+-
+set
+-
+chrono
+-
+thread
+-
 
 ../include/A_star/Node.h
 

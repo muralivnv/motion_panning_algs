@@ -6,6 +6,12 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <sstream>
+#include <list>
+#include <set>
+#include <chrono>
+#include <thread>
+
+using namespace std::chrono_literals;
 
 
 class AStarGrid{
@@ -13,6 +19,8 @@ class AStarGrid{
     double node_radius_ = 0.0;
     
     std::vector<std::vector<Node> > grid_;
+    int start_x_ = 0, start_y_ = 0;
+    int goal_x_ = 0, goal_y_ = 0;
 
     public:
         AStarGrid(int gridX, int gridY, double radius) 
@@ -28,7 +36,13 @@ class AStarGrid{
         void create_grid();
         void start(int,int);
         void goal(int,int);
-        void draw_grid();
+        void calc_node_weights(Node&, Node&);
+        bool push_neighbours_to_list(std::set<std::pair<int, int>>&,
+                                     std::set<std::pair<int, int>>&,
+                                     int, int);
+        void generate_shortest_path();
+
+        void draw_grid(std::set<std::pair<int,int>>& );
         void print();
 };
 

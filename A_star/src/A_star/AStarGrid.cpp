@@ -1,6 +1,5 @@
 #include <A_star/AStarGrid.h>
 
-
 void AStarGrid::create_grid()
 {
     for (uint x = 0; x < grid_.size(); ++x)
@@ -11,6 +10,141 @@ void AStarGrid::create_grid()
             grid_[x][y].pos_y = y + node_radius_;
         }
     }
+}
+
+void AStarGrid::start(int x, int y)
+{
+    start_x_ = x;
+    start_y_ = y;
+    grid_[start_x_-1][start_y_-1].g_cost = 0.0;
+    grid_[start_x_-1][start_y_-1].h_cost = 0.0;
+}
+
+void AStarGrid::goal(int x, int y)
+{
+    goal_x_ = x;
+    goal_y_ = y;
+    grid_[goal_x_-1][goal_y_-1].g_cost = 0.0;
+    grid_[goal_x_-1][goal_y_-1].h_cost = 0.0;
+}
+
+void AStarGrid::calc_node_weights(Node& parent_node, Node& successor_node)
+{
+    int delta_X = std::abs(successor_node.pos_x - parent_node.pos_x);
+    int delta_Y = std::abs(successor_node.pos_y - parent_node.pos_y);
+
+    if (delta_X > delta_Y)
+    {
+        successor_node.g_cost = parent_node.g_cost + 14*delta_Y + 
+                                                     10*(delta_X - delta_Y);
+    }
+    else
+    {
+        successor_node.g_cost = parent_node.g_cost + 14*delta_X + 
+                                                     10*(delta_Y - delta_X);
+    }
+
+    successor_node.h_cost = std::abs(successor_node.pos_x - goal_x_) + 
+                             std::abs(successor_node.pos_y - goal_y_);
+}
+
+auto contains(std::set<std::pair<int, int> >& list, Node& node)
+{
+    return list.find(std::make_pair(node.pos_x, node.pos_y));
+}
+
+bool AStarGrid::push_neighbours_to_list(std::set<std::pair<int, int> >& list,
+                                        std::set<std::pair<int, int> >& closed_list, 
+                                        int lower_idx_x, int lower_idx_y)
+{
+    Node& node = grid_[lower_idx_x][lower_idx_y];
+
+    for (int i = node.pos_x - 1; i <= node.pos_x + 1; ++i)
+    {
+        for (int j = node.pos_y - 1; j <= node.pos_y + 1; ++j)
+        {
+            auto elem_iter = contains(closed_list, grid_[i][j]);
+            if (elem_iter == closed_list.end())
+            {
+                if (i == goal_x_ && j == goal_y_)
+                { return true; }
+
+                if (i != node.pos_x && j != node.pos_y)
+                {
+                    auto current_node = grid_[i][j];
+                    calc_node_weights(node,current_node);
+
+                    elem_iter = contains(list, current_node);
+                    if (elem_iter == list.end())
+                    {
+                        list.insert(std::make_pair(i,j));
+                        grid_[i][j] = current_node;
+                    }
+                    else
+                    {
+                        if (grid_[i][j].g_cost + 
+                            grid_[i][j].h_cost 
+                                >
+                            current_node.g_cost + 
+                            current_node.h_cost )
+                        {
+                            grid_[i][j] = current_node;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void AStarGrid::generate_shortest_path()
+{
+    std::set<std::pair<int,int> > open_list, closed_list;
+    open_list.insert(std::make_pair(start_x_-1, start_y_-1));
+    bool found_goal = false;
+
+    while (!open_list.empty())
+    {
+        std::pair<int, int> lowest_idx;
+
+        auto smaller = open_list.begin();
+        for (std::set<std::pair<int,int> >::iterator elem  = open_list.begin(); 
+                elem != open_list.end(); ++elem)
+        {
+            int smaller_f_cost = grid_[smaller->first][smaller->second].g_cost + 
+                                  grid_[smaller->first][smaller->second].h_cost;
+            
+            int elem_f_cost = grid_[elem->first][elem->second].g_cost + 
+                              grid_[elem->first][elem->second].h_cost ;
+
+            if ( ( smaller_f_cost > 
+                   elem_f_cost) || 
+                  (smaller_f_cost == elem_f_cost && grid_[smaller->first][smaller->second].h_cost > 
+                                                    grid_[elem->first][elem->second].h_cost))
+            {
+                smaller = elem;
+            }
+        }
+
+        int lower_idx_x = smaller->first;
+        int lower_idx_y = smaller->second;
+
+        open_list.erase(smaller);
+
+        found_goal = push_neighbours_to_list(open_list,closed_list, lower_idx_x, lower_idx_y);
+        
+        if (found_goal)
+        { break; }
+
+        closed_list.insert(std::make_pair(lower_idx_x, lower_idx_y));
+    }
+    closed_list.insert(std::make_pair(goal_x_-1,goal_y_-1));
+    for (auto elem : closed_list)
+    {
+        std::cout << elem.first << "    " << elem.second << '\n';
+    }
+    draw_grid(closed_list);
 }
 
 void AStarGrid::print()
@@ -28,7 +162,7 @@ void AStarGrid::print()
     }
 }
 
-void AStarGrid::draw_grid()
+void AStarGrid::draw_grid(std::set<std::pair<int,int>>& list)
 {
     sf::RenderWindow window(sf::VideoMode(800,600), "Path Planning Search");
 
@@ -41,6 +175,7 @@ void AStarGrid::draw_grid()
     std::vector<sf::VertexArray> horiz_lines(number_of_blocks_x);
     std::vector<sf::VertexArray> vert_lines(number_of_blocks_y);
     std::vector<sf::CircleShape> circles(number_of_blocks_x*number_of_blocks_y );
+    std::vector<sf::CircleShape> sol_circles(list.size());
 
     int height = block_height_in_pixel;
     for (uint i = 0; i < horiz_lines.size(); ++i)
@@ -69,14 +204,13 @@ void AStarGrid::draw_grid()
     {
         for (uint j = block_height_in_pixel; j < 600; j += block_height_in_pixel)
         {
-
             circles[idx].setRadius(circle_radius);
             circles[idx].setPosition(sf::Vector2f(i - circle_radius, j - circle_radius));
             circles[idx].setFillColor(sf::Color(204,102,0));
             ++idx;
         }
-
     }
+
     sf::Font font;
     if (!font.loadFromFile("/home/vnv/Downloads/BebasNeue.otf"))
     {
@@ -105,6 +239,19 @@ void AStarGrid::draw_grid()
         pos_y_idx = 0;
         ++pos_x_idx;
     }
+
+    idx = 0;
+
+    for (auto elem : list)
+    {
+        sol_circles[idx].setRadius(5);
+        sol_circles[idx].setPosition(sf::Vector2f(  elem.first*block_width_in_pixel  - 5- (block_width_in_pixel/2), 
+                                                    elem.second*block_height_in_pixel - 5-(block_height_in_pixel/2)));
+        sol_circles[idx].setFillColor(sf::Color(255,0,0));
+        ++idx;
+    }
+
+
     sf::Event event;
     while(window.isOpen())
     {
@@ -123,14 +270,18 @@ void AStarGrid::draw_grid()
         {
             window.draw(vert_lines[i]);
         }
-        for (uint i = 0; i < circles.size(); ++i)
+//        for (uint i = 0; i < circles.size(); ++i)
+//        {
+//            window.draw(circles[i]);
+//        }
+        for (uint i = 0; i < sol_circles.size(); ++i)
         {
-            window.draw(circles[i]);
+            window.draw(sol_circles[i]);
         }
-        for (uint i = 0; i < txts.size(); ++i)
-        {
-            window.draw(txts[i]);
-        }
+//        for (uint i = 0; i < txts.size(); ++i)
+//        {
+//            window.draw(txts[i]);
+//        }
         window.display();
     }
 }

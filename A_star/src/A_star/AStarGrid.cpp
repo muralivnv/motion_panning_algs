@@ -6,8 +6,8 @@ void AStarGrid::create_grid()
     {
         for (uint y = 0; y < grid_[0].size(); ++y)
         {
-            grid_[x][y].pos_x = x + node_radius_;
-            grid_[x][y].pos_y = y + node_radius_;
+            grid_[x][y].pos_x = x;
+            grid_[x][y].pos_y = y;
         }
     }
 }
@@ -16,36 +16,20 @@ void AStarGrid::start(int x, int y)
 {
     start_x_ = x;
     start_y_ = y;
-    grid_[start_x_-1][start_y_-1].g_cost = 0.0;
-    grid_[start_x_-1][start_y_-1].h_cost = 0.0;
+    grid_[start_x_][start_y_].g_cost = 0.0;
+    grid_[start_x_][start_y_].h_cost = 0.0;
 }
 
 void AStarGrid::goal(int x, int y)
 {
     goal_x_ = x;
     goal_y_ = y;
-    grid_[goal_x_-1][goal_y_-1].g_cost = 0.0;
-    grid_[goal_x_-1][goal_y_-1].h_cost = 0.0;
+    grid_[goal_x_][goal_y_].g_cost = 0.0;
+    grid_[goal_x_][goal_y_].h_cost = 0.0;
 }
 
 void AStarGrid::calc_node_weights(Node& parent_node, Node& successor_node)
 {
-    int delta_X = std::abs(successor_node.pos_x - parent_node.pos_x);
-    int delta_Y = std::abs(successor_node.pos_y - parent_node.pos_y);
-
-    if (delta_X > delta_Y)
-    {
-        successor_node.g_cost = parent_node.g_cost + 14*delta_Y + 
-                                                     10*(delta_X - delta_Y);
-    }
-    else
-    {
-        successor_node.g_cost = parent_node.g_cost + 14*delta_X + 
-                                                     10*(delta_Y - delta_X);
-    }
-
-    successor_node.h_cost = std::abs(successor_node.pos_x - goal_x_) + 
-                             std::abs(successor_node.pos_y - goal_y_);
 }
 
 auto contains(std::set<std::pair<int, int> >& list, Node& node)
@@ -57,109 +41,12 @@ bool AStarGrid::push_neighbours_to_list(std::set<std::pair<int, int> >& list,
                                         std::set<std::pair<int, int> >& closed_list, 
                                         int lower_idx_x, int lower_idx_y)
 {
-    Node& node = grid_[lower_idx_x][lower_idx_y];
 
-    for (int i = node.pos_x - 1; i <= node.pos_x + 1; ++i)
-    {
-        for (int j = node.pos_y - 1; j <= node.pos_y + 1; ++j)
-        {
-            auto elem_iter = contains(closed_list, grid_[i][j]);
-            if (elem_iter == closed_list.end())
-            {
-                if (i == goal_x_ && j == goal_y_)
-                { return true; }
-
-                if (i != node.pos_x && j != node.pos_y)
-                {
-                    auto current_node = grid_[i][j];
-                    calc_node_weights(node,current_node);
-
-                    elem_iter = contains(list, current_node);
-                    if (elem_iter == list.end())
-                    {
-                        list.insert(std::make_pair(i,j));
-                        grid_[i][j] = current_node;
-                    }
-                    else
-                    {
-                        if (grid_[i][j].g_cost + 
-                            grid_[i][j].h_cost 
-                                >
-                            current_node.g_cost + 
-                            current_node.h_cost )
-                        {
-                            grid_[i][j] = current_node;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return false;
 }
 
 void AStarGrid::generate_shortest_path()
 {
-    std::set<std::pair<int,int> > open_list, closed_list;
-    open_list.insert(std::make_pair(start_x_-1, start_y_-1));
-    bool found_goal = false;
 
-    while (!open_list.empty())
-    {
-        std::pair<int, int> lowest_idx;
-
-        auto smaller = open_list.begin();
-        for (std::set<std::pair<int,int> >::iterator elem  = open_list.begin(); 
-                elem != open_list.end(); ++elem)
-        {
-            int smaller_f_cost = grid_[smaller->first][smaller->second].g_cost + 
-                                  grid_[smaller->first][smaller->second].h_cost;
-            
-            int elem_f_cost = grid_[elem->first][elem->second].g_cost + 
-                              grid_[elem->first][elem->second].h_cost ;
-
-            if ( ( smaller_f_cost > 
-                   elem_f_cost) || 
-                  (smaller_f_cost == elem_f_cost && grid_[smaller->first][smaller->second].h_cost > 
-                                                    grid_[elem->first][elem->second].h_cost))
-            {
-                smaller = elem;
-            }
-        }
-
-        int lower_idx_x = smaller->first;
-        int lower_idx_y = smaller->second;
-
-        open_list.erase(smaller);
-
-        found_goal = push_neighbours_to_list(open_list,closed_list, lower_idx_x, lower_idx_y);
-        
-        if (found_goal)
-        { break; }
-
-        closed_list.insert(std::make_pair(lower_idx_x, lower_idx_y));
-    }
-    closed_list.insert(std::make_pair(goal_x_-1,goal_y_-1));
-    for (auto elem : closed_list)
-    {
-        std::cout << elem.first << "    " << elem.second << '\n';
-    }
-    draw_grid(closed_list);
-}
-
-void AStarGrid::print()
-{
-    for (uint x = 0; x < grid_.size(); ++x)
-    {
-        for (uint y = 0; y < grid_[0].size(); ++y)
-        {
-            std::cout<< "( " << grid_[x][y].pos_x << ",";
-            std::cout<< grid_[x][y].pos_y << " )";
-
-            std::cout << "    ";
-        }
-        std::cout << '\n';
-    }
 }
 
 void AStarGrid::draw_grid(std::set<std::pair<int,int>>& list)

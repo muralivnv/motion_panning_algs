@@ -43,7 +43,6 @@ class AStarGrid{
         void generate_shortest_path();
 
         void draw_grid(std::set<std::pair<int,int>>& );
-        void print();
 };
 
 #endif

@@ -35,14 +35,16 @@ class AStarGrid{
 
         void create_grid();
         void start(int,int);
+        void add_obstacle(int, int);
         void goal(int,int);
         void calc_node_weights(Node&, Node&);
         bool push_neighbours_to_list(std::set<std::pair<int, int>>&,
-                                     std::set<std::pair<int, int>>&,
+                                     std::vector<Node>&,
                                      int, int);
         void generate_shortest_path();
 
-        void draw_grid(std::set<std::pair<int,int>>& );
+        void draw_grid(std::vector<Node>& );
+        void print();
 };
 
 #endif

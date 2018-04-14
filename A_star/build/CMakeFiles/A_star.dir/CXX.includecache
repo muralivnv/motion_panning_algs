@@ -28,7 +28,7 @@ thread
 
 ../include/A_star/Node.h
 
-/home/vnv/motion_planning/A_star/src/A_star/AStarGrid.cpp
+/home/vnv/Downloads/motion_planning_Commit5/A_star/src/A_star/AStarGrid.cpp
 A_star/AStarGrid.h
 -
 

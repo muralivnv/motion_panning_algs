@@ -6,5 +6,5 @@ CXX_FLAGS =   -std=c++14 -g
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/vnv/motion_planning/A_star/include 
+CXX_INCLUDES = -I/home/vnv/Downloads/motion_planning_Commit5/A_star/include 
 
